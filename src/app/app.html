@@ -1,0 +1,51 @@
+<div class="container d-flex flex-column justify-content-center align-items-center h-100">
+  <h1>Jogo de Adivinhação</h1>
+
+  <section class="mt-5">
+    <h2>Seleção de Dificuldade</h2>
+
+    <div class="row justify-content-center gap-2 mt-4">
+      <button (click)="selecionarDificuldade('Fácil')" class="col-3 btn btn-primary">Fácil</button>
+      <button (click)="selecionarDificuldade('Médio')" class="col-3 btn btn-primary">Médio</button>
+      <button (click)="selecionarDificuldade('Difícil')" class="col-3 btn btn-primary">
+        Difícil
+      </button>
+    </div>
+  </section>
+
+  <main class="row row-cols-3 g-3 align-items-center bg-danger-subtle rounded text-center p-5 mt-5">
+    <label class="display-1">{{ dicaNumeroMaiorQue }}></label>
+
+    <div class="d-flex flex-column gap-2">
+      <input
+        [disabled]="!dificuldadeSelecionada || jogoEstaFinalizado"
+        [(ngModel)]="numeroDigitado"
+        class="display-1 text-center rounded"
+        type="number"
+        min="1"
+        max="100"
+      />
+
+      <button
+        [disabled]="!dificuldadeSelecionada || jogoEstaFinalizado"
+        (click)="adivinhar()"
+        class="btn btn-primary"
+      >
+        Adivinhar
+      </button>
+      <button (click)="reiniciar()" class="btn btn-success">Reiniciar</button>
+    </div>
+
+    <label class="display-1"><{{ dicaNumeroMenorQue }}</label>
+  </main>
+
+  @if (dificuldadeSelecionada) {
+    <section class="d-flex justify-content-between gap-2 mt-2">
+      <label class="fs-5"><span class="fw-semibold">Pontuação:</span> {{ pontuacao }}</label>
+
+      <label class="fs-5"
+        ><span class="fw-semibold">Tentativas Restantes:</span> {{ tentativasRestantes }}</label
+      >
+    </section>
+  }
+</div>
