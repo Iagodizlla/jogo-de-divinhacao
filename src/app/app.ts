@@ -54,6 +54,11 @@ export class App implements OnInit {
   }
 
   public adivinhar(): void {
+    if (!this.dificuldadeSelecionada) {
+      console.warn('Nenhuma dificuldade selecionada! Jogo não pode continuar.');
+      return;
+    }
+
     this.tentativasRestantes--;
 
     if (this.numeroDigitado < this.numeroSecreto) {
@@ -79,7 +84,6 @@ export class App implements OnInit {
     else this.pontuacao -= 2;
   }
 
-
   private salvarPontuacao(): void {
     if (!this.dificuldadeSelecionada) return;
 
@@ -98,6 +102,7 @@ export class App implements OnInit {
     this.dicaNumeroMenorQue = 100;
 
     this.jogoEstaFinalizado = false;
+    this.dificuldadeSelecionada = undefined; // força o jogador a escolher
     this.pontuacao = 100;
   }
 
