@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RankingService } from './services/ranking.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,13 @@ export class App implements OnInit {
   public tentativasRestantes: number = 0;
   public pontuacao: number = 100;
 
-  ngOnInit(): void {}
+  public ranking: any[] = [];
+
+  constructor(private rankingService: RankingService) {}
+
+  ngOnInit(): void {
+    this.ranking = this.rankingService.getRanking();
+  }
 
   public selecionarDificuldade(dificuldade: string): void {
     switch (dificuldade) {
@@ -50,19 +57,35 @@ export class App implements OnInit {
 
     if (this.tentativasRestantes <= 0) {
       this.jogoEstaFinalizado = true;
+      this.salvarPontuacao();
       return;
     }
 
     if (this.numeroDigitado < this.numeroSecreto) this.dicaNumeroMaiorQue = this.numeroDigitado;
     else if (this.numeroDigitado > this.numeroSecreto)
       this.dicaNumeroMenorQue = this.numeroDigitado;
-    else this.jogoEstaFinalizado = true;
+    else {
+      this.jogoEstaFinalizado = true;
+      this.salvarPontuacao();
+    }
 
     const diferencaNumerica: number = Math.abs(this.numeroSecreto - this.numeroDigitado);
 
     if (diferencaNumerica >= 10) this.pontuacao -= 10;
     else if (diferencaNumerica >= 5) this.pontuacao -= 5;
     else this.pontuacao -= 2;
+  }
+
+  private salvarPontuacao(): void {
+    if (!this.dificuldadeSelecionada) return;
+
+    this.rankingService.addScore({
+      pontos: this.pontuacao,
+      dificuldade: this.dificuldadeSelecionada,
+      data: new Date().toLocaleDateString() // só dia/mês/ano
+    });
+
+    this.ranking = this.rankingService.getRanking();
   }
 
   public reiniciar(): void {
@@ -78,9 +101,11 @@ export class App implements OnInit {
 
   private obterNumeroSecreto(max: number) {
     const numeroAleatorio: number = Math.random() * (max - 1) + 1;
-
     const numeroSecreto = Math.floor(numeroAleatorio);
-
     return numeroSecreto;
+  }
+  public get rankingFiltrado(): any[] {
+    if (!this.dificuldadeSelecionada) return [];
+    return this.ranking.filter(item => item.dificuldade === this.dificuldadeSelecionada);
   }
 }

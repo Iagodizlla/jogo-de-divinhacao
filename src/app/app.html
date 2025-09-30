@@ -49,3 +49,29 @@
     </section>
   }
 </div>
+
+@if(rankingFiltrado.length > 0) {
+  <section class="mt-5 w-100">
+    <h2 class="text-center">🏆 Ranking - {{ dificuldadeSelecionada }}</h2>
+    <table class="table table-striped table-bordered mt-3">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pontos</th>
+          <th>Dificuldade</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of rankingFiltrado; track $index) {
+          <tr>
+            <td>{{ $index + 1 }}</td>
+            <td>{{ item.pontos }}</td>
+            <td>{{ item.dificuldade }}</td>
+            <td>{{ item.data }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

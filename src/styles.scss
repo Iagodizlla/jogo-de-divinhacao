@@ -1,1 +1,9 @@
 @use 'bootstrap';
+
+table {
+  text-align: center;
+  th {
+    background-color: #0d6efd;
+    color: white;
+  }
+}
