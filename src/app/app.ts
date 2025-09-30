@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RankingService } from './services/ranking.service';
+import { RankingService, Score } from './services/ranking.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +20,8 @@ export class App implements OnInit {
   public tentativasRestantes: number = 0;
   public pontuacao: number = 100;
 
-  public ranking: any[] = [];
+  public ranking: Record<string, Score[]> = { Fácil: [], Médio: [], Difícil: [] };
+
 
   constructor(private rankingService: RankingService) {}
 
@@ -55,16 +56,18 @@ export class App implements OnInit {
   public adivinhar(): void {
     this.tentativasRestantes--;
 
-    if (this.tentativasRestantes <= 0) {
+    if (this.numeroDigitado < this.numeroSecreto) {
+      this.dicaNumeroMaiorQue = this.numeroDigitado;
+    } else if (this.numeroDigitado > this.numeroSecreto) {
+      this.dicaNumeroMenorQue = this.numeroDigitado;
+    } else {
+      // Acertou
       this.jogoEstaFinalizado = true;
       this.salvarPontuacao();
       return;
     }
 
-    if (this.numeroDigitado < this.numeroSecreto) this.dicaNumeroMaiorQue = this.numeroDigitado;
-    else if (this.numeroDigitado > this.numeroSecreto)
-      this.dicaNumeroMenorQue = this.numeroDigitado;
-    else {
+    if (this.tentativasRestantes <= 0) {
       this.jogoEstaFinalizado = true;
       this.salvarPontuacao();
     }
@@ -76,13 +79,14 @@ export class App implements OnInit {
     else this.pontuacao -= 2;
   }
 
+
   private salvarPontuacao(): void {
     if (!this.dificuldadeSelecionada) return;
 
     this.rankingService.addScore({
       pontos: this.pontuacao,
       dificuldade: this.dificuldadeSelecionada,
-      data: new Date().toLocaleDateString() // só dia/mês/ano
+      data: new Date().toLocaleDateString()
     });
 
     this.ranking = this.rankingService.getRanking();
@@ -94,8 +98,6 @@ export class App implements OnInit {
     this.dicaNumeroMenorQue = 100;
 
     this.jogoEstaFinalizado = false;
-
-    this.dificuldadeSelecionada = undefined;
     this.pontuacao = 100;
   }
 
@@ -104,8 +106,9 @@ export class App implements OnInit {
     const numeroSecreto = Math.floor(numeroAleatorio);
     return numeroSecreto;
   }
-  public get rankingFiltrado(): any[] {
-    if (!this.dificuldadeSelecionada) return [];
-    return this.ranking.filter(item => item.dificuldade === this.dificuldadeSelecionada);
+
+  public get rankingFiltrado(): Score[] {
+    if (!this.dificuldadeSelecionada) return []; // evita erro
+      return this.ranking[this.dificuldadeSelecionada] || [];
   }
 }
